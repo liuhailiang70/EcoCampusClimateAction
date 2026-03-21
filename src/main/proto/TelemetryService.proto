@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "generated.telemetry";
+option java_outer_classname = "TelemetryServiceImpl";
+
+package telemetry;
+
+// The telemetry service definition.
+service TelemetryService {
+
+    // Gets the current meter reading for one campus meter.
+    // Unary: one request -> one response
+    rpc GetSnapshot (GetSnapshotRequest) returns (LoadSnapshot) {}
+}
+
+// The request message containing the meter id.
+message GetSnapshotRequest {
+    string meterId = 1;
+}
+
+// The response message containing the current load snapshot.
+message LoadSnapshot {
+    string meterId = 1;
+    string buildingId = 2;
+    double kwLoad = 3;
+    int64 timestamp = 4;
+    string status = 5;
+}
