@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "generated.analytics";
+option java_outer_classname = "AnalyticsAlertServiceImpl";
+
+package analytics;
+
+// The analytics alert service definition.
+service AnalyticsAlertService {
+
+    // Unary: one request -> one response
+    rpc GetBaseline (BaselineRequest) returns (BaselineModel) {}
+
+    // Bidirectional streaming: stream of requests <-> stream of responses
+    rpc MitigationLoop (stream MitigationCommand) returns (stream MitigationFeedback) {}
+}
+
+// Unary request
+message BaselineRequest {
+    string buildingId = 1;
+    string timeRange = 2;
+}
+
+// Unary response
+message BaselineModel {
+    string buildingId = 1;
+    double expectedKwLoad = 2;
+    string status = 3;
+}
+
+// Bidirectional streaming request
+message MitigationCommand {
+    string buildingId = 1;
+    string policyType = 2;
+    double hvacSetpointC = 3;
+    int32 durationMin = 4;
+}
+
+// Bidirectional streaming response
+message MitigationFeedback {
+    bool applied = 1;
+    string mode = 2;
+    string reason = 3;
+    double estKwReduction = 4;
+}

@@ -24,6 +24,16 @@ public final class TelemetryServiceImpl {
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_telemetry_LoadSnapshot_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_telemetry_StreamLoadRequest_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_telemetry_StreamLoadRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_telemetry_LoadSample_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_telemetry_LoadSample_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -37,11 +47,16 @@ public final class TelemetryServiceImpl {
       "etSnapshotRequest\022\017\n\007meterId\030\001 \001(\t\"f\n\014Lo" +
       "adSnapshot\022\017\n\007meterId\030\001 \001(\t\022\022\n\nbuildingI" +
       "d\030\002 \001(\t\022\016\n\006kwLoad\030\003 \001(\001\022\021\n\ttimestamp\030\004 \001" +
-      "(\003\022\016\n\006status\030\005 \001(\t2[\n\020TelemetryService\022G" +
-      "\n\013GetSnapshot\022\035.telemetry.GetSnapshotReq" +
-      "uest\032\027.telemetry.LoadSnapshot\"\000B-\n\023gener" +
-      "ated.telemetryB\024TelemetryServiceImplP\001b\006" +
-      "proto3"
+      "(\003\022\016\n\006status\030\005 \001(\t\"=\n\021StreamLoadRequest\022" +
+      "\017\n\007meterId\030\001 \001(\t\022\027\n\017numberOfSamples\030\002 \001(" +
+      "\005\"@\n\nLoadSample\022\017\n\007meterId\030\001 \001(\t\022\016\n\006kwLo" +
+      "ad\030\002 \001(\001\022\021\n\ttimestamp\030\003 \001(\0032\242\001\n\020Telemetr" +
+      "yService\022G\n\013GetSnapshot\022\035.telemetry.GetS" +
+      "napshotRequest\032\027.telemetry.LoadSnapshot\"" +
+      "\000\022E\n\nStreamLoad\022\034.telemetry.StreamLoadRe" +
+      "quest\032\025.telemetry.LoadSample\"\0000\001B-\n\023gene" +
+      "rated.telemetryB\024TelemetryServiceImplP\001b" +
+      "\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -67,6 +82,18 @@ public final class TelemetryServiceImpl {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_telemetry_LoadSnapshot_descriptor,
         new java.lang.String[] { "MeterId", "BuildingId", "KwLoad", "Timestamp", "Status", });
+    internal_static_telemetry_StreamLoadRequest_descriptor =
+      getDescriptor().getMessageTypes().get(2);
+    internal_static_telemetry_StreamLoadRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_telemetry_StreamLoadRequest_descriptor,
+        new java.lang.String[] { "MeterId", "NumberOfSamples", });
+    internal_static_telemetry_LoadSample_descriptor =
+      getDescriptor().getMessageTypes().get(3);
+    internal_static_telemetry_LoadSample_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_telemetry_LoadSample_descriptor,
+        new java.lang.String[] { "MeterId", "KwLoad", "Timestamp", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

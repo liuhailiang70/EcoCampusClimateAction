@@ -5,7 +5,7 @@ package generated.telemetry;
 
 /**
  * <pre>
- * The response message containing the current load snapshot.
+ * Unary response
  * </pre>
  *
  * Protobuf type {@code telemetry.LoadSnapshot}
@@ -434,7 +434,7 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <pre>
-   * The response message containing the current load snapshot.
+   * Unary response
    * </pre>
    *
    * Protobuf type {@code telemetry.LoadSnapshot}

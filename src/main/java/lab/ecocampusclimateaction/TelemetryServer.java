@@ -10,7 +10,9 @@ package lab.ecocampusclimateaction;
  */
 
 import generated.telemetry.GetSnapshotRequest;
+import generated.telemetry.LoadSample;
 import generated.telemetry.LoadSnapshot;
+import generated.telemetry.StreamLoadRequest;
 import generated.telemetry.TelemetryServiceGrpc.TelemetryServiceImplBase;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -58,6 +60,32 @@ public class TelemetryServer extends TelemetryServiceImplBase {
                 .build();
 
         responseObserver.onNext(reply);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void streamLoad(StreamLoadRequest request, StreamObserver<LoadSample> responseObserver) {
+
+        System.out.println("Received streamLoad request for meter: " + request.getMeterId());
+
+        int count = request.getNumberOfSamples();
+
+        for (int i = 1; i <= count; i++) {
+            LoadSample sample = LoadSample.newBuilder()
+                    .setMeterId(request.getMeterId())
+                    .setKwLoad(40.0 + i)
+                    .setTimestamp(System.currentTimeMillis())
+                    .build();
+
+            responseObserver.onNext(sample);
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
         responseObserver.onCompleted();
     }
 }

@@ -5,7 +5,7 @@ package generated.telemetry;
 
 /**
  * <pre>
- * The request message containing the meter id.
+ * Unary request
  * </pre>
  *
  * Protobuf type {@code telemetry.GetSnapshotRequest}
@@ -276,7 +276,7 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <pre>
-   * The request message containing the meter id.
+   * Unary request
    * </pre>
    *
    * Protobuf type {@code telemetry.GetSnapshotRequest}

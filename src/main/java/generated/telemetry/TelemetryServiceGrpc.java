@@ -62,6 +62,38 @@ public final class TelemetryServiceGrpc {
      return getGetSnapshotMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<generated.telemetry.StreamLoadRequest,
+      generated.telemetry.LoadSample> getStreamLoadMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "StreamLoad",
+      requestType = generated.telemetry.StreamLoadRequest.class,
+      responseType = generated.telemetry.LoadSample.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+  public static io.grpc.MethodDescriptor<generated.telemetry.StreamLoadRequest,
+      generated.telemetry.LoadSample> getStreamLoadMethod() {
+    io.grpc.MethodDescriptor<generated.telemetry.StreamLoadRequest, generated.telemetry.LoadSample> getStreamLoadMethod;
+    if ((getStreamLoadMethod = TelemetryServiceGrpc.getStreamLoadMethod) == null) {
+      synchronized (TelemetryServiceGrpc.class) {
+        if ((getStreamLoadMethod = TelemetryServiceGrpc.getStreamLoadMethod) == null) {
+          TelemetryServiceGrpc.getStreamLoadMethod = getStreamLoadMethod = 
+              io.grpc.MethodDescriptor.<generated.telemetry.StreamLoadRequest, generated.telemetry.LoadSample>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+              .setFullMethodName(generateFullMethodName(
+                  "telemetry.TelemetryService", "StreamLoad"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.telemetry.StreamLoadRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.telemetry.LoadSample.getDefaultInstance()))
+                  .setSchemaDescriptor(new TelemetryServiceMethodDescriptorSupplier("StreamLoad"))
+                  .build();
+          }
+        }
+     }
+     return getStreamLoadMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -94,13 +126,22 @@ public final class TelemetryServiceGrpc {
 
     /**
      * <pre>
-     * Gets the current meter reading for one campus meter.
      * Unary: one request -&gt; one response
      * </pre>
      */
     public void getSnapshot(generated.telemetry.GetSnapshotRequest request,
         io.grpc.stub.StreamObserver<generated.telemetry.LoadSnapshot> responseObserver) {
       asyncUnimplementedUnaryCall(getGetSnapshotMethod(), responseObserver);
+    }
+
+    /**
+     * <pre>
+     * Server streaming: one request -&gt; stream of responses
+     * </pre>
+     */
+    public void streamLoad(generated.telemetry.StreamLoadRequest request,
+        io.grpc.stub.StreamObserver<generated.telemetry.LoadSample> responseObserver) {
+      asyncUnimplementedUnaryCall(getStreamLoadMethod(), responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
@@ -112,6 +153,13 @@ public final class TelemetryServiceGrpc {
                 generated.telemetry.GetSnapshotRequest,
                 generated.telemetry.LoadSnapshot>(
                   this, METHODID_GET_SNAPSHOT)))
+          .addMethod(
+            getStreamLoadMethod(),
+            asyncServerStreamingCall(
+              new MethodHandlers<
+                generated.telemetry.StreamLoadRequest,
+                generated.telemetry.LoadSample>(
+                  this, METHODID_STREAM_LOAD)))
           .build();
     }
   }
@@ -139,7 +187,6 @@ public final class TelemetryServiceGrpc {
 
     /**
      * <pre>
-     * Gets the current meter reading for one campus meter.
      * Unary: one request -&gt; one response
      * </pre>
      */
@@ -147,6 +194,17 @@ public final class TelemetryServiceGrpc {
         io.grpc.stub.StreamObserver<generated.telemetry.LoadSnapshot> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getGetSnapshotMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     * <pre>
+     * Server streaming: one request -&gt; stream of responses
+     * </pre>
+     */
+    public void streamLoad(generated.telemetry.StreamLoadRequest request,
+        io.grpc.stub.StreamObserver<generated.telemetry.LoadSample> responseObserver) {
+      asyncServerStreamingCall(
+          getChannel().newCall(getStreamLoadMethod(), getCallOptions()), request, responseObserver);
     }
   }
 
@@ -173,13 +231,23 @@ public final class TelemetryServiceGrpc {
 
     /**
      * <pre>
-     * Gets the current meter reading for one campus meter.
      * Unary: one request -&gt; one response
      * </pre>
      */
     public generated.telemetry.LoadSnapshot getSnapshot(generated.telemetry.GetSnapshotRequest request) {
       return blockingUnaryCall(
           getChannel(), getGetSnapshotMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * Server streaming: one request -&gt; stream of responses
+     * </pre>
+     */
+    public java.util.Iterator<generated.telemetry.LoadSample> streamLoad(
+        generated.telemetry.StreamLoadRequest request) {
+      return blockingServerStreamingCall(
+          getChannel(), getStreamLoadMethod(), getCallOptions(), request);
     }
   }
 
@@ -206,7 +274,6 @@ public final class TelemetryServiceGrpc {
 
     /**
      * <pre>
-     * Gets the current meter reading for one campus meter.
      * Unary: one request -&gt; one response
      * </pre>
      */
@@ -218,6 +285,7 @@ public final class TelemetryServiceGrpc {
   }
 
   private static final int METHODID_GET_SNAPSHOT = 0;
+  private static final int METHODID_STREAM_LOAD = 1;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -239,6 +307,10 @@ public final class TelemetryServiceGrpc {
         case METHODID_GET_SNAPSHOT:
           serviceImpl.getSnapshot((generated.telemetry.GetSnapshotRequest) request,
               (io.grpc.stub.StreamObserver<generated.telemetry.LoadSnapshot>) responseObserver);
+          break;
+        case METHODID_STREAM_LOAD:
+          serviceImpl.streamLoad((generated.telemetry.StreamLoadRequest) request,
+              (io.grpc.stub.StreamObserver<generated.telemetry.LoadSample>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -302,6 +374,7 @@ public final class TelemetryServiceGrpc {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new TelemetryServiceFileDescriptorSupplier())
               .addMethod(getGetSnapshotMethod())
+              .addMethod(getStreamLoadMethod())
               .build();
         }
       }
