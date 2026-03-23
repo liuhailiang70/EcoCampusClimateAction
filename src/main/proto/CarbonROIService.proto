@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "generated.carbon";
+option java_outer_classname = "CarbonROIServiceImpl";
+
+package carbon;
+
+// The carbon and ROI service definition.
+service CarbonROIService {
+
+    // Client streaming: stream of requests -> one response
+    rpc UploadConsumption (stream ConsumptionSample) returns (CarbonReport) {}
+
+    // Unary: one request -> one response
+    rpc CalculateROI (RoiRequest) returns (RoiResult) {}
+}
+
+// Client-streamed consumption sample
+message ConsumptionSample {
+    int64 tsEpochMs = 1;
+    double kwh = 2;
+    string meterId = 3;
+}
+
+// Aggregated response after upload completes
+message CarbonReport {
+    double kgco2eTotal = 1;
+    double costAmount = 2;
+    string currency = 3;
+    repeated string insights = 4;
+}
+
+// Unary ROI request
+message RoiRequest {
+    string buildingId = 1;
+    double tariffPerKwh = 2;
+    double emissionFactorKgco2ePerKwh = 3;
+    double expectedSavingsPct = 4;
+}
+
+// Unary ROI response
+message RoiResult {
+    double annualCostSaving = 1;
+    double annualKgco2eReduction = 2;
+    double paybackYears = 3;
+}
