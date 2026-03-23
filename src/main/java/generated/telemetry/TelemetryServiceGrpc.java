@@ -94,6 +94,38 @@ public final class TelemetryServiceGrpc {
      return getStreamLoadMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<generated.telemetry.MeterConfigUpdate,
+      generated.telemetry.MeterConfigStatus> getUpdateMeterConfigMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "UpdateMeterConfig",
+      requestType = generated.telemetry.MeterConfigUpdate.class,
+      responseType = generated.telemetry.MeterConfigStatus.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<generated.telemetry.MeterConfigUpdate,
+      generated.telemetry.MeterConfigStatus> getUpdateMeterConfigMethod() {
+    io.grpc.MethodDescriptor<generated.telemetry.MeterConfigUpdate, generated.telemetry.MeterConfigStatus> getUpdateMeterConfigMethod;
+    if ((getUpdateMeterConfigMethod = TelemetryServiceGrpc.getUpdateMeterConfigMethod) == null) {
+      synchronized (TelemetryServiceGrpc.class) {
+        if ((getUpdateMeterConfigMethod = TelemetryServiceGrpc.getUpdateMeterConfigMethod) == null) {
+          TelemetryServiceGrpc.getUpdateMeterConfigMethod = getUpdateMeterConfigMethod = 
+              io.grpc.MethodDescriptor.<generated.telemetry.MeterConfigUpdate, generated.telemetry.MeterConfigStatus>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(
+                  "telemetry.TelemetryService", "UpdateMeterConfig"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.telemetry.MeterConfigUpdate.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.telemetry.MeterConfigStatus.getDefaultInstance()))
+                  .setSchemaDescriptor(new TelemetryServiceMethodDescriptorSupplier("UpdateMeterConfig"))
+                  .build();
+          }
+        }
+     }
+     return getUpdateMeterConfigMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -144,6 +176,16 @@ public final class TelemetryServiceGrpc {
       asyncUnimplementedUnaryCall(getStreamLoadMethod(), responseObserver);
     }
 
+    /**
+     * <pre>
+     * Unary: one request -&gt; one response
+     * </pre>
+     */
+    public void updateMeterConfig(generated.telemetry.MeterConfigUpdate request,
+        io.grpc.stub.StreamObserver<generated.telemetry.MeterConfigStatus> responseObserver) {
+      asyncUnimplementedUnaryCall(getUpdateMeterConfigMethod(), responseObserver);
+    }
+
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -160,6 +202,13 @@ public final class TelemetryServiceGrpc {
                 generated.telemetry.StreamLoadRequest,
                 generated.telemetry.LoadSample>(
                   this, METHODID_STREAM_LOAD)))
+          .addMethod(
+            getUpdateMeterConfigMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                generated.telemetry.MeterConfigUpdate,
+                generated.telemetry.MeterConfigStatus>(
+                  this, METHODID_UPDATE_METER_CONFIG)))
           .build();
     }
   }
@@ -206,6 +255,17 @@ public final class TelemetryServiceGrpc {
       asyncServerStreamingCall(
           getChannel().newCall(getStreamLoadMethod(), getCallOptions()), request, responseObserver);
     }
+
+    /**
+     * <pre>
+     * Unary: one request -&gt; one response
+     * </pre>
+     */
+    public void updateMeterConfig(generated.telemetry.MeterConfigUpdate request,
+        io.grpc.stub.StreamObserver<generated.telemetry.MeterConfigStatus> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getUpdateMeterConfigMethod(), getCallOptions()), request, responseObserver);
+    }
   }
 
   /**
@@ -249,6 +309,16 @@ public final class TelemetryServiceGrpc {
       return blockingServerStreamingCall(
           getChannel(), getStreamLoadMethod(), getCallOptions(), request);
     }
+
+    /**
+     * <pre>
+     * Unary: one request -&gt; one response
+     * </pre>
+     */
+    public generated.telemetry.MeterConfigStatus updateMeterConfig(generated.telemetry.MeterConfigUpdate request) {
+      return blockingUnaryCall(
+          getChannel(), getUpdateMeterConfigMethod(), getCallOptions(), request);
+    }
   }
 
   /**
@@ -282,10 +352,22 @@ public final class TelemetryServiceGrpc {
       return futureUnaryCall(
           getChannel().newCall(getGetSnapshotMethod(), getCallOptions()), request);
     }
+
+    /**
+     * <pre>
+     * Unary: one request -&gt; one response
+     * </pre>
+     */
+    public com.google.common.util.concurrent.ListenableFuture<generated.telemetry.MeterConfigStatus> updateMeterConfig(
+        generated.telemetry.MeterConfigUpdate request) {
+      return futureUnaryCall(
+          getChannel().newCall(getUpdateMeterConfigMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_GET_SNAPSHOT = 0;
   private static final int METHODID_STREAM_LOAD = 1;
+  private static final int METHODID_UPDATE_METER_CONFIG = 2;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -311,6 +393,10 @@ public final class TelemetryServiceGrpc {
         case METHODID_STREAM_LOAD:
           serviceImpl.streamLoad((generated.telemetry.StreamLoadRequest) request,
               (io.grpc.stub.StreamObserver<generated.telemetry.LoadSample>) responseObserver);
+          break;
+        case METHODID_UPDATE_METER_CONFIG:
+          serviceImpl.updateMeterConfig((generated.telemetry.MeterConfigUpdate) request,
+              (io.grpc.stub.StreamObserver<generated.telemetry.MeterConfigStatus>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -375,6 +461,7 @@ public final class TelemetryServiceGrpc {
               .setSchemaDescriptor(new TelemetryServiceFileDescriptorSupplier())
               .addMethod(getGetSnapshotMethod())
               .addMethod(getStreamLoadMethod())
+              .addMethod(getUpdateMeterConfigMethod())
               .build();
         }
       }

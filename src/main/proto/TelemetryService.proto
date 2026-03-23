@@ -14,6 +14,9 @@ service TelemetryService {
 
     // Server streaming: one request -> stream of responses
     rpc StreamLoad (StreamLoadRequest) returns (stream LoadSample) {}
+
+    // Unary: one request -> one response
+    rpc UpdateMeterConfig (MeterConfigUpdate) returns (MeterConfigStatus) {}
 }
 
 // Unary request
@@ -41,4 +44,18 @@ message LoadSample {
     string meterId = 1;
     double kwLoad = 2;
     int64 timestamp = 3;
+}
+
+// Update config request
+message MeterConfigUpdate {
+    string meterId = 1;
+    int32 intervalSec = 2;
+    repeated string enabledChannels = 3;
+}
+
+// Update config response
+message MeterConfigStatus {
+    bool applied = 1;
+    string reason = 2;
+    int32 effectiveIntervalSec = 3;
 }

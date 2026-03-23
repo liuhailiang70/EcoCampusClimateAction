@@ -9,9 +9,12 @@ package lab.ecocampusclimateaction;
  * @author liuhailiang
  */
 
+
 import generated.telemetry.GetSnapshotRequest;
 import generated.telemetry.LoadSample;
 import generated.telemetry.LoadSnapshot;
+import generated.telemetry.MeterConfigStatus;
+import generated.telemetry.MeterConfigUpdate;
 import generated.telemetry.StreamLoadRequest;
 import generated.telemetry.TelemetryServiceGrpc.TelemetryServiceImplBase;
 import io.grpc.Server;
@@ -86,6 +89,33 @@ public class TelemetryServer extends TelemetryServiceImplBase {
             }
         }
 
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void updateMeterConfig(MeterConfigUpdate request, StreamObserver<MeterConfigStatus> responseObserver) {
+
+        System.out.println("Received updateMeterConfig request for meter: " + request.getMeterId()
+                + ", interval: " + request.getIntervalSec()
+                + ", channels: " + request.getEnabledChannelsList());
+
+        boolean applied = true;
+        String reason = "Configuration applied successfully";
+        int effectiveIntervalSec = request.getIntervalSec();
+
+        if (request.getIntervalSec() < 5) {
+            applied = false;
+            reason = "Interval too low, minimum is 5 seconds";
+            effectiveIntervalSec = 5;
+        }
+
+        MeterConfigStatus reply = MeterConfigStatus.newBuilder()
+                .setApplied(applied)
+                .setReason(reason)
+                .setEffectiveIntervalSec(effectiveIntervalSec)
+                .build();
+
+        responseObserver.onNext(reply);
         responseObserver.onCompleted();
     }
 }
