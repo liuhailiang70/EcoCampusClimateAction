@@ -37,6 +37,14 @@ public class CarbonServer extends CarbonROIServiceImplBase {
             logger.info("Carbon server started, listening on " + port);
             System.out.println("***** Carbon server started, listening on " + port);
 
+            ExampleServiceRegistration serviceRegistration = ExampleServiceRegistration.getInstance();
+            serviceRegistration.registerService(
+                    "_carbon._tcp.local.",
+                    "CarbonService",
+                    port,
+                    "gRPC carbon service"
+            );
+
             server.awaitTermination();
 
         } catch (IOException e) {

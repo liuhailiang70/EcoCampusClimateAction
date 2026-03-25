@@ -37,6 +37,14 @@ public class AnalyticsServer extends AnalyticsAlertServiceImplBase {
             logger.info("Analytics server started, listening on " + port);
             System.out.println("***** Analytics server started, listening on " + port);
 
+            ExampleServiceRegistration serviceRegistration = ExampleServiceRegistration.getInstance();
+            serviceRegistration.registerService(
+                    "_analytics._tcp.local.",
+                    "AnalyticsService",
+                    port,
+                    "gRPC analytics service"
+            );
+
             server.awaitTermination();
 
         } catch (IOException e) {

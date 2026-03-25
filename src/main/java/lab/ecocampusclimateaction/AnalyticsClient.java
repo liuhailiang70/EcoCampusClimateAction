@@ -20,9 +20,11 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.jmdns.ServiceInfo;
 
 public class AnalyticsClient {
 
@@ -32,8 +34,24 @@ public class AnalyticsClient {
     private static AnalyticsAlertServiceStub asyncStub;
 
     public static void main(String[] args) throws Exception {
+        ExampleServiceDiscovery discovery = new ExampleServiceDiscovery(
+                "_analytics._tcp.local.",
+                "AnalyticsService"
+        );
+
+        ServiceInfo serviceInfo = discovery.discoverService(10000);
+
+        if (serviceInfo == null) {
+            System.out.println("Analytics service not found.");
+            discovery.close();
+            return;
+        }
+
         String host = "localhost";
-        int port = 50052;
+
+        int port = serviceInfo.getPort();
+
+        System.out.println("Connecting to Analytics service at " + host + ":" + port);
 
         ManagedChannel channel = ManagedChannelBuilder
                 .forAddress(host, port)
@@ -46,10 +64,15 @@ public class AnalyticsClient {
         try {
             requestBaseline();
             runMitigationLoop();
-
-            channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
         } catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+        } finally {
+            channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
+            try {
+                discovery.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -9,7 +9,6 @@ package lab.ecocampusclimateaction;
  * @author liuhailiang
  */
 
-
 import generated.telemetry.GetSnapshotRequest;
 import generated.telemetry.LoadSample;
 import generated.telemetry.LoadSnapshot;
@@ -39,6 +38,14 @@ public class TelemetryServer extends TelemetryServiceImplBase {
 
             logger.info("Telemetry server started, listening on " + port);
             System.out.println("***** Telemetry server started, listening on " + port);
+
+            ExampleServiceRegistration serviceRegistration = ExampleServiceRegistration.getInstance();
+            serviceRegistration.registerService(
+                    "_telemetry._tcp.local.",
+                    "TelemetryService",
+                    port,
+                    "gRPC telemetry service"
+            );
 
             server.awaitTermination();
 

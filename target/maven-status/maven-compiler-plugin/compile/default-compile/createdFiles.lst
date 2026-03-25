@@ -1,13 +1,16 @@
 generated/analytics/AnalyticsAlertServiceGrpc$AnalyticsAlertServiceFileDescriptorSupplier.class
+lab/ecocampusclimateaction/ExampleServiceDiscovery.class
 generated/analytics/BaselineModel$1.class
 generated/analytics/MitigationFeedbackOrBuilder.class
 generated/carbon/RoiRequestOrBuilder.class
 generated/telemetry/TelemetryServiceGrpc$TelemetryServiceStub.class
 generated/analytics/AnalyticsAlertServiceImpl$1.class
+lab/ecocampusclimateaction/EcoCampusGUI$1.class
 generated/telemetry/StreamLoadRequest$1.class
 generated/analytics/BaselineModel$Builder.class
 generated/telemetry/LoadSampleOrBuilder.class
 generated/carbon/RoiResult.class
+lab/ecocampusclimateaction/EcoCampusGUI.class
 generated/telemetry/MeterConfigStatus$Builder.class
 generated/analytics/MitigationCommand$Builder.class
 generated/carbon/CarbonROIServiceGrpc.class
@@ -33,6 +36,7 @@ lab/ecocampusclimateaction/CarbonClient$1.class
 generated/carbon/CarbonROIServiceImpl$1.class
 generated/analytics/BaselineRequestOrBuilder.class
 generated/telemetry/LoadSample.class
+lab/ecocampusclimateaction/ExampleServiceRegistration.class
 generated/telemetry/GetSnapshotRequest.class
 generated/telemetry/MeterConfigStatus.class
 generated/telemetry/TelemetryServiceGrpc$TelemetryServiceBaseDescriptorSupplier.class
@@ -88,6 +92,7 @@ generated/carbon/CarbonROIServiceGrpc$CarbonROIServiceBlockingStub.class
 generated/carbon/ConsumptionSample$1.class
 generated/telemetry/LoadSnapshotOrBuilder.class
 generated/telemetry/TelemetryServiceImpl.class
+lab/ecocampusclimateaction/ExampleServiceDiscovery$1.class
 generated/telemetry/LoadSnapshot$1.class
 generated/carbon/RoiRequest$1.class
 lab/ecocampusclimateaction/AnalyticsClient.class
@@ -97,4 +102,5 @@ generated/carbon/CarbonReport$Builder.class
 generated/carbon/CarbonReport$1.class
 generated/telemetry/MeterConfigUpdate$1.class
 generated/telemetry/TelemetryServiceGrpc$TelemetryServiceFileDescriptorSupplier.class
+lab/ecocampusclimateaction/EcoCampusGUI$2.class
 generated/carbon/RoiRequest.class

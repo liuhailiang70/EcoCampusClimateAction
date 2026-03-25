@@ -1,10 +1,13 @@
 /Users/liuhailiang/Desktop/NCI/2.Distributed Systems/CA1/EcoCampusClimateAction/src/main/java/generated/analytics/MitigationCommand.java
 /Users/liuhailiang/Desktop/NCI/2.Distributed Systems/CA1/EcoCampusClimateAction/src/main/java/generated/telemetry/StreamLoadRequestOrBuilder.java
+/Users/liuhailiang/Desktop/NCI/2.Distributed Systems/CA1/EcoCampusClimateAction/src/main/java/lab/ecocampusclimateaction/ExampleServiceDiscovery.java
+/Users/liuhailiang/Desktop/NCI/2.Distributed Systems/CA1/EcoCampusClimateAction/src/main/java/lab/ecocampusclimateaction/EcoCampusGUI.java
 /Users/liuhailiang/Desktop/NCI/2.Distributed Systems/CA1/EcoCampusClimateAction/src/main/java/generated/telemetry/MeterConfigUpdateOrBuilder.java
 /Users/liuhailiang/Desktop/NCI/2.Distributed Systems/CA1/EcoCampusClimateAction/src/main/java/generated/telemetry/LoadSnapshotOrBuilder.java
 /Users/liuhailiang/Desktop/NCI/2.Distributed Systems/CA1/EcoCampusClimateAction/src/main/java/generated/telemetry/GetSnapshotRequest.java
 /Users/liuhailiang/Desktop/NCI/2.Distributed Systems/CA1/EcoCampusClimateAction/src/main/java/lab/ecocampusclimateaction/TelemetryClient.java
 /Users/liuhailiang/Desktop/NCI/2.Distributed Systems/CA1/EcoCampusClimateAction/src/main/java/generated/carbon/RoiRequest.java
+/Users/liuhailiang/Desktop/NCI/2.Distributed Systems/CA1/EcoCampusClimateAction/src/main/java/lab/ecocampusclimateaction/ExampleServiceRegistration.java
 /Users/liuhailiang/Desktop/NCI/2.Distributed Systems/CA1/EcoCampusClimateAction/src/main/java/generated/carbon/RoiResultOrBuilder.java
 /Users/liuhailiang/Desktop/NCI/2.Distributed Systems/CA1/EcoCampusClimateAction/src/main/java/generated/telemetry/TelemetryServiceGrpc.java
 /Users/liuhailiang/Desktop/NCI/2.Distributed Systems/CA1/EcoCampusClimateAction/src/main/java/generated/carbon/ConsumptionSample.java

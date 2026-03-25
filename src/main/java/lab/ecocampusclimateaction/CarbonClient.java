@@ -9,7 +9,6 @@ package lab.ecocampusclimateaction;
  * @author liuhailiang
  */
 
-
 import generated.carbon.CarbonROIServiceGrpc;
 import generated.carbon.CarbonROIServiceGrpc.CarbonROIServiceBlockingStub;
 import generated.carbon.CarbonROIServiceGrpc.CarbonROIServiceStub;
@@ -20,8 +19,10 @@ import generated.carbon.RoiResult;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+import javax.jmdns.ServiceInfo;
 
 public class CarbonClient {
 
@@ -30,8 +31,24 @@ public class CarbonClient {
     private static CarbonROIServiceBlockingStub blockingStub;
 
     public static void main(String[] args) throws Exception {
+        ExampleServiceDiscovery discovery = new ExampleServiceDiscovery(
+                "_carbon._tcp.local.",
+                "CarbonService"
+        );
+
+        ServiceInfo serviceInfo = discovery.discoverService(10000);
+
+        if (serviceInfo == null) {
+            System.out.println("Carbon service not found.");
+            discovery.close();
+            return;
+        }
+
         String host = "localhost";
-        int port = 50053;
+
+        int port = serviceInfo.getPort();
+
+        System.out.println("Connecting to Carbon service at " + host + ":" + port);
 
         ManagedChannel channel = ManagedChannelBuilder
                 .forAddress(host, port)
@@ -44,10 +61,15 @@ public class CarbonClient {
         try {
             uploadConsumptionSamples();
             requestROI();
-
-            channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
+            try {
+                discovery.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
