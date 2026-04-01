@@ -77,19 +77,34 @@ public class AnalyticsClient {
     }
 
     private static void requestBaseline() {
-        BaselineRequest request = BaselineRequest.newBuilder()
-                .setBuildingId("Engineering_Block")
+    BaselineRequest request = BaselineRequest.newBuilder()
+            .setBuildingId("Engineering_Block")
+            .setTimeRange("LAST_7_DAYS")
+            .build();
+
+    BaselineModel response = blockingStub.getBaseline(request);
+
+    System.out.println("===== ANALYTICS UNARY RESPONSE =====");
+    System.out.println("Building ID: " + response.getBuildingId());
+    System.out.println("Expected kW Load: " + response.getExpectedKwLoad());
+    System.out.println("Status: " + response.getStatus());
+    System.out.println();
+
+    try {
+        BaselineRequest invalidRequest = BaselineRequest.newBuilder()
+                .setBuildingId("")
                 .setTimeRange("LAST_7_DAYS")
                 .build();
 
-        BaselineModel response = blockingStub.getBaseline(request);
+        blockingStub.getBaseline(invalidRequest);
 
-        System.out.println("===== ANALYTICS UNARY RESPONSE =====");
-        System.out.println("Building ID: " + response.getBuildingId());
-        System.out.println("Expected kW Load: " + response.getExpectedKwLoad());
-        System.out.println("Status: " + response.getStatus());
+    } catch (StatusRuntimeException e) {
+        System.out.println("===== ANALYTICS REMOTE ERROR DEMO =====");
+        System.out.println("Error Code: " + e.getStatus().getCode());
+        System.out.println("Description: " + e.getStatus().getDescription());
         System.out.println();
     }
+}
 
     private static void runMitigationLoop() {
         System.out.println("===== ANALYTICS BIDI RESPONSES =====");
@@ -106,7 +121,14 @@ public class AnalyticsClient {
 
             @Override
             public void onError(Throwable t) {
-                t.printStackTrace();
+                if (t instanceof StatusRuntimeException) {
+                    StatusRuntimeException e = (StatusRuntimeException) t;
+                    System.out.println("===== ANALYTICS BIDI ERROR DEMO =====");
+                    System.out.println("Error Code: " + e.getStatus().getCode());
+                    System.out.println("Description: " + e.getStatus().getDescription());
+                } else {
+                    t.printStackTrace();
+                }
             }
 
             @Override
@@ -130,7 +152,7 @@ public class AnalyticsClient {
             requestObserver.onNext(MitigationCommand.newBuilder()
                     .setBuildingId("Engineering_Block")
                     .setPolicyType("HVAC_SETPOINT")
-                    .setHvacSetpointC(15.0)
+                    .setHvacSetpointC(30.0)
                     .setDurationMin(20)
                     .build());
             System.out.println("Client sent mitigation command: HVAC 15.0C");

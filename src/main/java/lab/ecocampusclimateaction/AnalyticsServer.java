@@ -9,6 +9,7 @@ package lab.ecocampusclimateaction;
  * @author liuhailiang
  */
 
+
 import generated.analytics.AnalyticsAlertServiceGrpc.AnalyticsAlertServiceImplBase;
 import generated.analytics.BaselineModel;
 import generated.analytics.BaselineRequest;
@@ -16,8 +17,10 @@ import generated.analytics.MitigationCommand;
 import generated.analytics.MitigationFeedback;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 public class AnalyticsServer extends AnalyticsAlertServiceImplBase {
@@ -57,6 +60,24 @@ public class AnalyticsServer extends AnalyticsAlertServiceImplBase {
     @Override
     public void getBaseline(BaselineRequest request, StreamObserver<BaselineModel> responseObserver) {
 
+        if (request.getBuildingId() == null || request.getBuildingId().trim().isEmpty()) {
+            responseObserver.onError(
+                    Status.INVALID_ARGUMENT
+                            .withDescription("buildingId is required")
+                            .asRuntimeException()
+            );
+            return;
+        }
+
+        if (request.getTimeRange() == null || request.getTimeRange().trim().isEmpty()) {
+            responseObserver.onError(
+                    Status.INVALID_ARGUMENT
+                            .withDescription("timeRange is required")
+                            .asRuntimeException()
+            );
+            return;
+        }
+
         System.out.println("Received getBaseline request for building: " + request.getBuildingId());
 
         BaselineModel reply = BaselineModel.newBuilder()
@@ -72,31 +93,77 @@ public class AnalyticsServer extends AnalyticsAlertServiceImplBase {
     @Override
     public StreamObserver<MitigationCommand> mitigationLoop(StreamObserver<MitigationFeedback> responseObserver) {
 
+        AtomicBoolean streamClosed = new AtomicBoolean(false);
+
         return new StreamObserver<MitigationCommand>() {
 
             @Override
             public void onNext(MitigationCommand request) {
+
+                if (streamClosed.get()) {
+                    return;
+                }
+
+                if (request.getBuildingId() == null || request.getBuildingId().trim().isEmpty()) {
+                    streamClosed.set(true);
+                    responseObserver.onError(
+                            Status.INVALID_ARGUMENT
+                                    .withDescription("buildingId is required")
+                                    .asRuntimeException()
+                    );
+                    return;
+                }
+
+                if (request.getPolicyType() == null || request.getPolicyType().trim().isEmpty()) {
+                    streamClosed.set(true);
+                    responseObserver.onError(
+                            Status.INVALID_ARGUMENT
+                                    .withDescription("policyType is required")
+                                    .asRuntimeException()
+                    );
+                    return;
+                }
+
+                if (!request.getPolicyType().equals("HVAC_SETPOINT")) {
+                    streamClosed.set(true);
+                    responseObserver.onError(
+                            Status.UNIMPLEMENTED
+                                    .withDescription("Unsupported policyType: " + request.getPolicyType())
+                                    .asRuntimeException()
+                    );
+                    return;
+                }
+
+                if (request.getDurationMin() <= 0) {
+                    streamClosed.set(true);
+                    responseObserver.onError(
+                            Status.INVALID_ARGUMENT
+                                    .withDescription("durationMin must be greater than 0")
+                                    .asRuntimeException()
+                    );
+                    return;
+                }
+
+                if (request.getHvacSetpointC() < 16 || request.getHvacSetpointC() > 26) {
+                    streamClosed.set(true);
+                    responseObserver.onError(
+                            Status.INVALID_ARGUMENT
+                                    .withDescription("hvacSetpointC must be between 16 and 26")
+                                    .asRuntimeException()
+                    );
+                    return;
+                }
+
                 System.out.println("Received mitigation command for building: "
                         + request.getBuildingId()
                         + ", policy: " + request.getPolicyType()
                         + ", hvac: " + request.getHvacSetpointC());
 
-                boolean applied = true;
-                String reason = "Command accepted";
-                double estimatedReduction = 0.0;
-
-                if (request.getHvacSetpointC() < 16 || request.getHvacSetpointC() > 26) {
-                    applied = false;
-                    reason = "HVAC setpoint out of allowed range";
-                } else {
-                    estimatedReduction = 2.5;
-                }
-
                 MitigationFeedback feedback = MitigationFeedback.newBuilder()
-                        .setApplied(applied)
+                        .setApplied(true)
                         .setMode(request.getPolicyType())
-                        .setReason(reason)
-                        .setEstKwReduction(estimatedReduction)
+                        .setReason("Command accepted")
+                        .setEstKwReduction(2.5)
                         .build();
 
                 responseObserver.onNext(feedback);
@@ -109,8 +176,10 @@ public class AnalyticsServer extends AnalyticsAlertServiceImplBase {
 
             @Override
             public void onCompleted() {
-                System.out.println("mitigationLoop completed.");
-                responseObserver.onCompleted();
+                if (!streamClosed.get()) {
+                    System.out.println("mitigationLoop completed.");
+                    responseObserver.onCompleted();
+                }
             }
         };
     }

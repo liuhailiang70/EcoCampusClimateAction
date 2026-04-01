@@ -20,36 +20,18 @@ import generated.telemetry.TelemetryServiceGrpc.TelemetryServiceBlockingStub;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.jmdns.ServiceInfo;
 
 public class TelemetryClient {
 
     private static final Logger logger = Logger.getLogger(TelemetryClient.class.getName());
 
     public static void main(String[] args) throws Exception {
-        ExampleServiceDiscovery discovery = new ExampleServiceDiscovery(
-                "_telemetry._tcp.local.",
-                "TelemetryService"
-        );
-
-        ServiceInfo serviceInfo = discovery.discoverService(10000);
-
-        if (serviceInfo == null) {
-            System.out.println("Telemetry service not found.");
-            discovery.close();
-            return;
-        }
-
         String host = "localhost";
-
-        int port = serviceInfo.getPort();
-
-        System.out.println("Connecting to Telemetry service at " + host + ":" + port);
+        int port = 50051;
 
         ManagedChannel channel = ManagedChannelBuilder
                 .forAddress(host, port)
@@ -59,6 +41,7 @@ public class TelemetryClient {
         TelemetryServiceBlockingStub blockingStub = TelemetryServiceGrpc.newBlockingStub(channel);
 
         try {
+            // Unary call 1: GetSnapshot
             GetSnapshotRequest snapshotRequest = GetSnapshotRequest.newBuilder()
                     .setMeterId("METER-01")
                     .build();
@@ -73,6 +56,7 @@ public class TelemetryClient {
             System.out.println("Status: " + snapshotResponse.getStatus());
             System.out.println();
 
+            // Server streaming call: StreamLoad
             StreamLoadRequest streamRequest = StreamLoadRequest.newBuilder()
                     .setMeterId("METER-01")
                     .setNumberOfSamples(5)
@@ -91,6 +75,7 @@ public class TelemetryClient {
 
             System.out.println();
 
+            // Unary call 2: UpdateMeterConfig
             MeterConfigUpdate configRequest = MeterConfigUpdate.newBuilder()
                     .setMeterId("METER-01")
                     .setIntervalSec(10)
@@ -104,16 +89,56 @@ public class TelemetryClient {
             System.out.println("Applied: " + configResponse.getApplied());
             System.out.println("Reason: " + configResponse.getReason());
             System.out.println("Effective Interval Sec: " + configResponse.getEffectiveIntervalSec());
+            System.out.println();
+
+            // Remote error handling demo
+            try {
+                GetSnapshotRequest invalidRequest = GetSnapshotRequest.newBuilder()
+                        .setMeterId("UNKNOWN-METER")
+                        .build();
+
+                blockingStub.getSnapshot(invalidRequest);
+
+            } catch (StatusRuntimeException e) {
+                System.out.println("===== TELEMETRY REMOTE ERROR DEMO =====");
+                System.out.println("Error Code: " + e.getStatus().getCode());
+                System.out.println("Description: " + e.getStatus().getDescription());
+                System.out.println();
+            }
+
+            // Deadline demo
+            try {
+                TelemetryServiceBlockingStub deadlineStub = TelemetryServiceGrpc.newBlockingStub(channel)
+                        .withDeadlineAfter(1, TimeUnit.SECONDS);
+
+                StreamLoadRequest deadlineRequest = StreamLoadRequest.newBuilder()
+                        .setMeterId("METER-01")
+                        .setNumberOfSamples(5)
+                        .build();
+
+                Iterator<LoadSample> deadlineSamples = deadlineStub.streamLoad(deadlineRequest);
+
+                System.out.println("===== TELEMETRY DEADLINE DEMO =====");
+                while (deadlineSamples.hasNext()) {
+                    LoadSample sample = deadlineSamples.next();
+                    System.out.println("Meter ID: " + sample.getMeterId()
+                            + ", kW Load: " + sample.getKwLoad()
+                            + ", Timestamp: " + sample.getTimestamp());
+                }
+
+            } catch (StatusRuntimeException e) {
+                System.out.println("===== TELEMETRY DEADLINE DEMO =====");
+                System.out.println("Error Code: " + e.getStatus().getCode());
+                System.out.println("Description: " + e.getStatus().getDescription());
+                System.out.println();
+            }
 
         } catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.log(Level.WARNING,
+                    "RPC failed: code={0}, description={1}",
+                    new Object[]{e.getStatus().getCode(), e.getStatus().getDescription()});
         } finally {
             channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
-            try {
-                discovery.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 }

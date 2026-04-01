@@ -49,6 +49,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import io.grpc.StatusRuntimeException;
 
 public class EcoCampusGUI extends JFrame {
 
@@ -150,6 +151,9 @@ public class EcoCampusGUI extends JFrame {
         new Thread(() -> {
             try {
                 task.run();
+            } catch (StatusRuntimeException ex) {
+                appendOutput("gRPC Error Code: " + ex.getStatus().getCode());
+                appendOutput("gRPC Error Description: " + ex.getStatus().getDescription());
             } catch (Exception ex) {
                 appendOutput("Error: " + ex.getMessage());
                 ex.printStackTrace();

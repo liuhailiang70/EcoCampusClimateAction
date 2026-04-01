@@ -9,6 +9,7 @@ package lab.ecocampusclimateaction;
  * @author liuhailiang
  */
 
+
 import generated.telemetry.GetSnapshotRequest;
 import generated.telemetry.LoadSample;
 import generated.telemetry.LoadSnapshot;
@@ -18,6 +19,7 @@ import generated.telemetry.StreamLoadRequest;
 import generated.telemetry.TelemetryServiceGrpc.TelemetryServiceImplBase;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -59,6 +61,24 @@ public class TelemetryServer extends TelemetryServiceImplBase {
     @Override
     public void getSnapshot(GetSnapshotRequest request, StreamObserver<LoadSnapshot> responseObserver) {
 
+        if (request.getMeterId() == null || request.getMeterId().trim().isEmpty()) {
+            responseObserver.onError(
+                    Status.INVALID_ARGUMENT
+                            .withDescription("meterId is required")
+                            .asRuntimeException()
+            );
+            return;
+        }
+
+        if (!request.getMeterId().equals("METER-01")) {
+            responseObserver.onError(
+                    Status.NOT_FOUND
+                            .withDescription("Meter not found: " + request.getMeterId())
+                            .asRuntimeException()
+            );
+            return;
+        }
+
         System.out.println("Received getSnapshot request for meter: " + request.getMeterId());
 
         LoadSnapshot reply = LoadSnapshot.newBuilder()
@@ -76,6 +96,24 @@ public class TelemetryServer extends TelemetryServiceImplBase {
     @Override
     public void streamLoad(StreamLoadRequest request, StreamObserver<LoadSample> responseObserver) {
 
+        if (request.getMeterId() == null || request.getMeterId().trim().isEmpty()) {
+            responseObserver.onError(
+                    Status.INVALID_ARGUMENT
+                            .withDescription("meterId is required")
+                            .asRuntimeException()
+            );
+            return;
+        }
+
+        if (request.getNumberOfSamples() <= 0 || request.getNumberOfSamples() > 10) {
+            responseObserver.onError(
+                    Status.INVALID_ARGUMENT
+                            .withDescription("numberOfSamples must be between 1 and 10")
+                            .asRuntimeException()
+            );
+            return;
+        }
+
         System.out.println("Received streamLoad request for meter: " + request.getMeterId());
 
         int count = request.getNumberOfSamples();
@@ -92,7 +130,13 @@ public class TelemetryServer extends TelemetryServiceImplBase {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                responseObserver.onError(
+                        Status.INTERNAL
+                                .withDescription("Stream interrupted")
+                                .withCause(e)
+                                .asRuntimeException()
+                );
+                return;
             }
         }
 
@@ -101,6 +145,24 @@ public class TelemetryServer extends TelemetryServiceImplBase {
 
     @Override
     public void updateMeterConfig(MeterConfigUpdate request, StreamObserver<MeterConfigStatus> responseObserver) {
+
+        if (request.getMeterId() == null || request.getMeterId().trim().isEmpty()) {
+            responseObserver.onError(
+                    Status.INVALID_ARGUMENT
+                            .withDescription("meterId is required")
+                            .asRuntimeException()
+            );
+            return;
+        }
+
+        if (request.getIntervalSec() <= 0) {
+            responseObserver.onError(
+                    Status.INVALID_ARGUMENT
+                            .withDescription("intervalSec must be greater than 0")
+                            .asRuntimeException()
+            );
+            return;
+        }
 
         System.out.println("Received updateMeterConfig request for meter: " + request.getMeterId()
                 + ", interval: " + request.getIntervalSec()
@@ -126,3 +188,4 @@ public class TelemetryServer extends TelemetryServiceImplBase {
         responseObserver.onCompleted();
     }
 }
+
