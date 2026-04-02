@@ -33,6 +33,7 @@ import generated.telemetry.TelemetryServiceGrpc;
 import generated.telemetry.TelemetryServiceGrpc.TelemetryServiceBlockingStub;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -49,7 +50,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
-import io.grpc.StatusRuntimeException;
 
 public class EcoCampusGUI extends JFrame {
 
@@ -159,6 +159,23 @@ public class EcoCampusGUI extends JFrame {
                 ex.printStackTrace();
             }
         }).start();
+    }
+
+    private void appendGrpcError(String prefix, Throwable t) {
+        if (t instanceof StatusRuntimeException) {
+            StatusRuntimeException ex = (StatusRuntimeException) t;
+            appendOutput(prefix);
+            appendOutput("gRPC Error Code: " + ex.getStatus().getCode());
+            appendOutput("gRPC Error Description: " + ex.getStatus().getDescription());
+        } else {
+            appendOutput(prefix);
+            appendOutput("Error: " + t.getMessage());
+        }
+    }
+
+    private void handleAsyncStreamError(String prefix, Throwable t, CountDownLatch latch) {
+        appendGrpcError(prefix, t);
+        latch.countDown();
     }
 
     private void callTelemetrySnapshot() {
@@ -304,8 +321,7 @@ public class EcoCampusGUI extends JFrame {
 
                 @Override
                 public void onError(Throwable t) {
-                    appendOutput("Mitigation stream error: " + t.getMessage());
-                    latch.countDown();
+                    handleAsyncStreamError("Analytics mitigation stream error", t, latch);
                 }
 
                 @Override
@@ -328,14 +344,16 @@ public class EcoCampusGUI extends JFrame {
             requestObserver.onNext(MitigationCommand.newBuilder()
                     .setBuildingId("Engineering_Block")
                     .setPolicyType("HVAC_SETPOINT")
-                    .setHvacSetpointC(15.0)
+                    .setHvacSetpointC(30.0)
                     .setDurationMin(20)
                     .build());
-            appendOutput("Client sent mitigation command: HVAC 15.0C");
+            appendOutput("Client sent mitigation command: HVAC 30.0C");
 
             requestObserver.onCompleted();
             latch.await(5, TimeUnit.SECONDS);
 
+        } catch (StatusRuntimeException e) {
+            appendGrpcError("Analytics mitigation request error", e);
         } catch (Exception e) {
             appendOutput("Analytics mitigation error: " + e.getMessage());
         } finally {
@@ -367,8 +385,7 @@ public class EcoCampusGUI extends JFrame {
 
                 @Override
                 public void onError(Throwable t) {
-                    appendOutput("Carbon upload error: " + t.getMessage());
-                    latch.countDown();
+                    handleAsyncStreamError("Carbon upload stream error", t, latch);
                 }
 
                 @Override
@@ -404,6 +421,8 @@ public class EcoCampusGUI extends JFrame {
             requestObserver.onCompleted();
             latch.await(5, TimeUnit.SECONDS);
 
+        } catch (StatusRuntimeException e) {
+            appendGrpcError("Carbon upload request error", e);
         } catch (Exception e) {
             appendOutput("Carbon upload error: " + e.getMessage());
         } finally {

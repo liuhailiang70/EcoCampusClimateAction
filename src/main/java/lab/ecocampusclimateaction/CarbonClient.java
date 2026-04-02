@@ -88,8 +88,8 @@ public class CarbonClient {
 
             @Override
             public void onError(Throwable t) {
+                System.out.println("===== CARBON REMOTE ERROR DEMO =====");
                 System.out.println("UploadConsumption error: " + t.getMessage());
-                t.printStackTrace();
             }
 
             @Override
@@ -112,7 +112,7 @@ public class CarbonClient {
 
             requestObserver.onNext(ConsumptionSample.newBuilder()
                     .setTsEpochMs(System.currentTimeMillis())
-                    .setKwh(15.0)
+                    .setKwh(10.0)
                     .setMeterId("METER-01")
                     .build());
             System.out.println("Client sent sample 2");
@@ -120,7 +120,7 @@ public class CarbonClient {
 
             requestObserver.onNext(ConsumptionSample.newBuilder()
                     .setTsEpochMs(System.currentTimeMillis())
-                    .setKwh(10.0)
+                    .setKwh(0.0)
                     .setMeterId("METER-01")
                     .build());
             System.out.println("Client sent sample 3");
